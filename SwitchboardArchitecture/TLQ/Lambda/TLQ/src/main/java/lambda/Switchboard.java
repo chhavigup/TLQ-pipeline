@@ -17,18 +17,18 @@ public class Switchboard implements RequestHandler<Request, HashMap<String, Obje
        Response response = new Response();
        
         String servicename=request.getServicename();
-        if(servicename.equals("service1")){
+        if("service1".equals(servicename)){
             Service1 pc = new Service1();
             s = pc.handleRequest(request, context);
             response.setValue(s.toString());
 
         }
-        else if(servicename.equals("service2")){
+        else if("service2".equals(servicename)){
           Service2DataLoad sdl = new Service2DataLoad();
           s = sdl.handleRequest(request, context);
           response.setValue(s.toString());
         }        
-        else if(servicename.equals("service3")){
+        else if("service3".equals(servicename)){
            Service3Query serv3 = new Service3Query ();
            List<List<QueryResult>> qr =  serv3.handleRequest(request, context);
           
