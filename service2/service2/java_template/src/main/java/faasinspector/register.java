@@ -6,6 +6,7 @@
 package faasinspector;
 
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import io.github.pixee.security.BoundedLineReader;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -56,7 +57,7 @@ public class register
             newcontainer = 0;
             try (BufferedReader br = Files.newBufferedReader(p))
             {
-                uuid = br.readLine();
+                uuid = BoundedLineReader.readLine(br, 5_000_000);
                 br.close();
             }
             catch (IOException ioe)
@@ -131,7 +132,7 @@ public class register
         {
             try (BufferedReader br = Files.newBufferedReader(p))
             {
-                text = br.readLine();
+                text = BoundedLineReader.readLine(br, 5_000_000);
                 String params[] = text.split(" ");
                 VmCpuStat vcs = new VmCpuStat(Long.parseLong(params[2]),
                                               Long.parseLong(params[3]),
@@ -141,7 +142,7 @@ public class register
                                               Long.parseLong(params[7]),
                                               Long.parseLong(params[8]),
                                               Long.parseLong(params[9]));
-                while ((text = br.readLine()) != null && text.length() != 0) {
+                while ((text = BoundedLineReader.readLine(br, 5_000_000)) != null && text.length() != 0) {
                     // get boot time in ms since epoch
                     if (text.contains("btime"))
                     {
@@ -193,7 +194,7 @@ public class register
         {
             try (BufferedReader br = Files.newBufferedReader(p))
             {
-                while((text = br.readLine()) != null)
+                while((text = BoundedLineReader.readLine(br, 5_000_000)) != null)
                 {
                     sb.append(text);
                 }
