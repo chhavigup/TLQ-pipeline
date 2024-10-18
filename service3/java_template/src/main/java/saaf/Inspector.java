@@ -1,5 +1,6 @@
 package saaf;
 
+import io.github.pixee.security.BoundedLineReader;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -76,7 +77,7 @@ public class Inspector {
         if (f.exists()) {
             newContainer = 0;
             try (BufferedReader br = Files.newBufferedReader(p)) {
-                uuid = br.readLine();
+                uuid = BoundedLineReader.readLine(br, 5_000_000);
                 br.close();
             } catch (IOException ioe) {
                 //sError = STAMP_ERR_READING_EXISTING_UUID;
@@ -103,7 +104,7 @@ public class Inspector {
         String text;
         if (f.exists()) {
             try (BufferedReader br = Files.newBufferedReader(p)) {
-                while ((text = br.readLine()) != null && text.length() != 0) {
+                while ((text = BoundedLineReader.readLine(br, 5_000_000)) != null && text.length() != 0) {
                     // get boot time in ms since epoch 
                     if (text.contains("btime")) {
                         String prms[] = text.split(" ");
@@ -166,7 +167,7 @@ public class Inspector {
         Path p = Paths.get(filename);
         if (f.exists()) {
             try (BufferedReader br = Files.newBufferedReader(p)) {
-                text = br.readLine();
+                text = BoundedLineReader.readLine(br, 5_000_000);
                 String params[] = text.split(" ");
 
                 String[] metricNames = {"cpuUsr", "cpuNice", "cpuKrn", "cpuIdle",
@@ -176,7 +177,7 @@ public class Inspector {
                     attributes.put(metricNames[i], Long.parseLong(params[i + 2]));
                 }
 
-                while ((text = br.readLine()) != null && text.length() != 0) {
+                while ((text = BoundedLineReader.readLine(br, 5_000_000)) != null && text.length() != 0) {
                     if (text.contains("ctxt")) {
                         String prms[] = text.split(" ");
                         attributes.put("contextSwitches", Long.parseLong(prms[1]));
@@ -213,7 +214,7 @@ public class Inspector {
             Path p = Paths.get(filename);
             if (f.exists()) {
                 try (BufferedReader br = Files.newBufferedReader(p)) {
-                    text = br.readLine();
+                    text = BoundedLineReader.readLine(br, 5_000_000);
                     String params[] = text.split(" ");
 
                     String[] metricNames = {"cpuUsr", "cpuNice", "cpuKrn", "cpuIdle",
@@ -223,7 +224,7 @@ public class Inspector {
                         attributes.put(metricNames[i] + "Delta", Long.parseLong(params[i + 2]) - (Long)attributes.get(metricNames[i]));
                     }
 
-                    while ((text = br.readLine()) != null && text.length() != 0) {
+                    while ((text = BoundedLineReader.readLine(br, 5_000_000)) != null && text.length() != 0) {
                         if (text.contains("ctxt")) {
                             String prms[] = text.split(" ");
                             attributes.put("contextSwitchesDelta", Long.parseLong(prms[1]) - (Long)attributes.get("contextSwitches"));
@@ -265,7 +266,7 @@ public class Inspector {
         Path p = Paths.get(filename);
         if (f.exists()) {
             try (BufferedReader br = Files.newBufferedReader(p)) {
-                while ((text = br.readLine()) != null && text.length() != 0) {
+                while ((text = BoundedLineReader.readLine(br, 5_000_000)) != null && text.length() != 0) {
                     if (text.contains("pgfault")) {
                         String prms[] = text.split(" ");
                         attributes.put("pageFaults", Long.parseLong(prms[1]));
@@ -298,7 +299,7 @@ public class Inspector {
             Path p = Paths.get(filename);
             if (f.exists()) {
                 try (BufferedReader br = Files.newBufferedReader(p)) {
-                    while ((text = br.readLine()) != null && text.length() != 0) {
+                    while ((text = BoundedLineReader.readLine(br, 5_000_000)) != null && text.length() != 0) {
                         if (text.contains("pgfault")) {
                             String prms[] = text.split(" ");
                             attributes.put("pageFaultsDelta", Long.parseLong(prms[1]) - (Long)attributes.get("pageFaults"));
@@ -515,7 +516,7 @@ public class Inspector {
         StringBuilder sb = new StringBuilder();
         if (f.exists()) {
             try (BufferedReader br = Files.newBufferedReader(p)) {
-                while ((text = br.readLine()) != null) {
+                while ((text = BoundedLineReader.readLine(br, 5_000_000)) != null) {
                     sb.append(text);
                     sb.append("\n");
                 }
@@ -543,7 +544,7 @@ public class Inspector {
                     new InputStreamReader(process.getInputStream()));
 
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = BoundedLineReader.readLine(reader, 5_000_000)) != null) {
                 output.append(line);
                 output.append("\n");
             }
